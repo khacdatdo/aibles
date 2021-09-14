@@ -44,10 +44,10 @@ function orderDes(number = 0) {
 }
 
 function reorderDigits(array = [], order) {
-    if (order == "asc") {
+    if (order === "asc") {
         return array.map(orderAsc);
     }
-    else if (order == "desc") {
+    else if (order === "desc") {
         return array.map(orderDes);
     }
 }
@@ -63,9 +63,9 @@ function maxPossible(a = 0, b = 0) {
     a = a.toString().split("");
     b = b.toString().split("").sort((x, y) => x - y);
     while (b.length > 0) {
-        let temp = b.pop();
-        let index = a.findIndex(e => e < temp);
-        if (index != -1) {
+        const temp = b.pop();
+        const index = a.findIndex(e => e < temp);
+        if (index !== -1) {
             a[index] = temp;
         }
     }
