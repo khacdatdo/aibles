@@ -20,7 +20,7 @@ console.log(canFind(["ay", "be", "ta", "cu"], ["maybe", "beta", "abet", "course"
 function warOfNumbers(numbers = []) {
     let evenSum = 0;
     let oddSum = 0;
-    numbers.map(number => {
+    numbers.forEach(number => {
         if (number % 2 == 0) {
             evenSum += number;
         } else {
