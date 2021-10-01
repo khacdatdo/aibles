@@ -1,13 +1,15 @@
 import { users } from './users.db'
 
-async function createUser(user) {
-    user.id = users.length + 1;
-    users.push(user);
-    return users;
+function createUser(user) {
+    return new Promise(function (success, fail) {
+        user.id = users.length + 1;
+        users.push(user);
+        success(users);
+    });
 }
 
-async function getUsers(ft) {
-    try {
+function getUsers(ft) {
+    return new Promise(function (success, fail) {
         const result = users.filter(function (user) {
             if (!ft.id && !ft.name && !ft.sex && !ft.age) {
                 return true;
@@ -18,29 +20,31 @@ async function getUsers(ft) {
                 || (ft.age && ft.age * 1 == user.age);
         });
         if (Math.ceil(result.length / ft.per_page) < ft.page) {
-            return [];
+            success([]);
         }
-        return result.slice((ft.page - 1) * ft.per_page, ft.page * ft.per_page);
-    } catch (error) {
-        console.log(error);
-    }
+        success(result.slice((ft.page - 1) * ft.per_page, ft.page * ft.per_page));
+    })
 }
 
-async function updateUser(user) {
-    users.forEach(function (u) {
-        if (user.id * 1 == u.id) {
-            u = Object.assign(u, user);
-            return;
-        }
+function updateUser(user) {
+    return new Promise(function (success) {
+        users.forEach(function (u) {
+            if (user.id * 1 == u.id) {
+                u = Object.assign(u, user);
+                return;
+            }
+        })
+        success(users);
     })
-    return users;
 }
 
-async function deleteUser(id) {
-    const result = users.filter(function (user) {
-        return id * 1 !== user.id * 1;
+function deleteUser(id) {
+    return new Promise(function (success) {
+        const result = users.filter(function (user) {
+            return id * 1 !== user.id * 1;
+        })
+        success(result);
     })
-    return result;
 }
 
 

@@ -81,7 +81,7 @@ function validUpdateUser(req, res, next) {
 function validRemoveUser(req, res, next) {
     const {
         id
-    } = req.body;
+    } = req.params;
     if (!id || !RegexNumber.test(id)) {
         return res.status(ErrorCodes.ERROR_CODE_INVALID_PARAMETER)
             .json(responseWithError(ErrorCodes.ERROR_CODE_INVALID_PARAMETER, 'Invalid argument. Expected id'));

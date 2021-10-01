@@ -7,8 +7,17 @@ const router = Router();
 router
     .route('/')
     .get(validGetFilter, get)
+
+router
+    .route('/')
     .post(validCreateUser, create)
+
+router
+    .route('/')
     .patch(validUpdateUser, update)
+
+router
+    .route('/:id')
     .delete(validRemoveUser, remove)
 
 export default router;
