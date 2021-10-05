@@ -59,16 +59,16 @@
 - **Một số HTTP Status Code phổ biến:**
     + `2xx` Success (Thành công):
         + `200` OK - Request đã được tiếp nhận và xử lý thành công.
-        + `201` Created – Trả về khi một resouce vừa được tạo thành công.
+        + `201` Created - Trả về khi một resouce vừa được tạo thành công.
         + `202` Accepted - Request được chấp nhận cho xử lý, nhưng việc xử lý chưa hoàn
             thành.
         + `204` No Content - Server đã xử lý thành công request nhưng không trả về bất cứ
             content nào.
     + `4xx` Client Error (Lỗi Client):
-        + `400` Bad Request – Request không hợp lệ.
-        + `401` Unauthorized – Request cần có auth.
-        + `403` Forbidden – bị từ chối không cho phép.
-        + `404` Not Found – Không tìm thấy resource từ URI.
+        + `400` Bad Request - Request không hợp lệ.
+        + `401` Unauthorized - Request cần có auth.
+        + `403` Forbidden - bị từ chối không cho phép.
+        + `404` Not Found - Không tìm thấy resource từ URI.
     + `5xx` Server Error (Lỗi Server):
         + `500` Internal Server Error - Một thông báo chung chung, được đưa ra khi Server gặp
             phải một trường hợp bất ngờ.
