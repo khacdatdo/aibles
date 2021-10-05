@@ -5,6 +5,13 @@
 
 
 ## 👉 Thành phần
+  - [Endpoint](#endpoint)
+  - [Method](#method)
+  - [Headers](#headers)
+  - [Body](#body)
+  - [Status Code](#status-code)
+  
+
 ### Endpoint
 - Là đường dẫn mà client sẽ gửi yêu cầu đến.
 - Ví dụ: Endpoint tới API của Facebook:
