@@ -1,6 +1,6 @@
-import { get, create, update, remove } from '../controllers/user.controller';
+import { get, create, update, remove, getAllUsersPosts, getPostsByUserId } from '../controllers/user.controller';
 import { Router } from 'express';
-import { validCreateUser, validGetFilter, validRemoveUser, validUpdateUser } from '../middleware/user.validation';
+import { validateGetPostsByUserId, validCreateUser, validGetFilter, validRemoveUser, validUpdateUser } from '../middleware/user.validation';
 
 const router = Router();
 
@@ -19,5 +19,13 @@ router
 router
     .route('/:id')
     .delete(validRemoveUser, remove)
+
+router
+    .route('/posts')
+    .get(getAllUsersPosts)
+
+router
+    .route('/:user_id/posts')
+    .get(validateGetPostsByUserId, getPostsByUserId)
 
 export default router;

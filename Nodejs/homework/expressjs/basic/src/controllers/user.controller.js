@@ -1,6 +1,6 @@
 import { ErrorCodes, respondSuccess, responseWithError } from '../helpers';
 
-import { createUser, deleteUser, getUsers, updateUser } from '../services/user.service';
+import { createUser, deleteUser, getUserPosts, getUsers, getUsersPosts, updateUser } from '../services/user.service';
 
 async function create(req, res) {
     try {
@@ -8,7 +8,8 @@ async function create(req, res) {
         const users = await createUser(user);
         return res.json(respondSuccess(users));
     } catch (error) {
-        return res.json(responseWithError(ErrorCodes.ERROR_CODE_INVALID_PARAMETER, 'Error', error));
+        return res.status(ErrorCodes.ERROR_CODE_INVALID_PARAMETER)
+            .json(responseWithError(ErrorCodes.ERROR_CODE_INVALID_PARAMETER, 'Error', error));
     }
 }
 
@@ -26,7 +27,7 @@ async function get(req, res) {
         const users = await getUsers(Object.assign(default_filter, filter));
         return res.json(respondSuccess(users));
     } catch (error) {
-        return res.json(responseWithError(ErrorCodes.ERROR_CODE_INVALID_PARAMETER, 'Error', error));
+        return res.status(ErrorCodes.ERROR_CODE_INVALID_PARAMETER).json(responseWithError(ErrorCodes.ERROR_CODE_INVALID_PARAMETER, 'Error', error));
     }
 }
 
@@ -52,10 +53,45 @@ async function remove(req, res) {
     }
 }
 
+function getAllUsersPosts(req, res) {
+    return new Promise(function (success, fail) {
+        getUsersPosts().then(function (r) {
+            success(r);
+            return res.json(respondSuccess(r));
+        }).catch(function (e) {
+            fail(e);
+            return res.status(ErrorCodes.ERROR_CODE_SYSTEM_ERROR)
+                .json(responseWithError(ErrorCodes.ERROR_CODE_SYSTEM_ERROR, 'Unknown Error', e));
+        })
+    }).catch(function (e) {
+        // write to logger
+        console.error('Error');
+    })
+}
+
+function getPostsByUserId(req, res) {
+    const { user_id } = req.params;
+    const { limit } = req.query || 2;
+    return new Promise(function (success, fail) {
+        getUserPosts(user_id, limit)
+            .then(function (r) {
+                success(r);
+                return res.json(respondSuccess(r));
+            })
+            .catch(function (err) {
+                fail(err);
+                return res.status(ErrorCodes.ERROR_CODE_SYSTEM_ERROR)
+                    .json(responseWithError(ErrorCodes.ERROR_CODE_SYSTEM_ERROR, 'Unknown Error', err));
+            });
+    });
+}
+
 
 export {
     create,
     get,
     update,
-    remove
+    remove,
+    getAllUsersPosts,
+    getPostsByUserId
 }

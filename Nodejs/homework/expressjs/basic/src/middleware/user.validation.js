@@ -5,19 +5,15 @@ import {
 
 function validCreateUser(req, res, next) {
     const {
-        name, sex, age
+        name, age
     } = req.body;
-    if (!name || !sex || !age) {
+    if (!name || !age) {
         return res.status(ErrorCodes.ERROR_CODE_INVALID_PARAMETER)
             .json(responseWithError(ErrorCodes.ERROR_CODE_INVALID_PARAMETER, 'Invalid argument'));
     }
     if (!RegexName.test(name)) {
         return res.status(ErrorCodes.ERROR_CODE_INVALID_PARAMETER)
             .json(responseWithError(ErrorCodes.ERROR_CODE_INVALID_PARAMETER, 'Invalid name'));
-    }
-    if (!RegexSex.test(sex)) {
-        return res.status(ErrorCodes.ERROR_CODE_INVALID_PARAMETER)
-            .json(responseWithError(ErrorCodes.ERROR_CODE_INVALID_PARAMETER, 'Invalid sex'));
     }
     if (!RegexNumber.test(age) || age * 1 < 1 || age * 1 > 150) {
         return res.status(ErrorCodes.ERROR_CODE_INVALID_PARAMETER)
@@ -89,6 +85,20 @@ function validRemoveUser(req, res, next) {
     return next();
 }
 
+function validateGetPostsByUserId(req, res, next) {
+    const { user_id } = req.params;
+    const { limit } = req.query;
+    if (!user_id || !RegexNumber.test(user_id)) {
+        return res.status(ErrorCodes.ERROR_CODE_INVALID_PARAMETER)
+            .json(ErrorCodes.ERROR_CODE_INVALID_PARAMETER, 'Invalid user_id');
+    }
+    if (limit && !RegexNumber.test(limit)) {
+        return res.status(ErrorCodes.ERROR_CODE_INVALID_PARAMETER)
+            .json(ErrorCodes.ERROR_CODE_INVALID_PARAMETER, 'Invalid limit');
+    }
+    return next();
+}
+
 export {
-    validCreateUser, validGetFilter, validUpdateUser, validRemoveUser
+    validCreateUser, validGetFilter, validUpdateUser, validRemoveUser, validateGetPostsByUserId
 }
