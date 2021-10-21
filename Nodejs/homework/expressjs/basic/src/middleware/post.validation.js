@@ -3,6 +3,15 @@ import {
 } from '../helpers';
 import { RegexNumber } from '../helpers/regex';
 
+function validateGetPostById(req, res, next) {
+    const { id } = req.params;
+    if (!id || id * 1 < 1) {
+        return res.status(ErrorCodes.ERROR_CODE_INVALID_PARAMETER)
+            .json(responseWithError(ErrorCodes.ERROR_CODE_INVALID_PARAMETER, 'Invalid id'));
+    }
+    return next();
+}
+
 function validateCreatePost(req, res, next) {
     const { context, user_id, tags } = req.body;
     if (!context || !user_id || !tags) {
@@ -51,6 +60,7 @@ function validateDeletePost(req, res, next) {
 }
 
 module.exports = {
+    validateGetPostById,
     validateCreatePost,
     validateUpdatePost,
     validateDeletePost

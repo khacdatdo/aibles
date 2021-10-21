@@ -1,6 +1,7 @@
 import { Router } from "express";
-import { create, update, remove } from "../controllers/post.controller";
+import { getById, create, update, remove } from "../controllers/post.controller";
 import {
+    validateGetPostById,
     validateCreatePost,
     validateUpdatePost,
     validateDeletePost
@@ -10,6 +11,9 @@ import {
 const router = Router();
 
 
+router
+    .route('/:id')
+    .get(validateGetPostById, getById);
 
 router
     .route('/')

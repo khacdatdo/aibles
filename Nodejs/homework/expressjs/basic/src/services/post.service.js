@@ -1,5 +1,50 @@
 import mysql from 'mysql';
 import database from "./db";
+import redis from 'redis';
+const postCache = redis.createClient();
+
+
+function getPostById(id) {
+    return new Promise(function (success, fail) {
+        postCache.get(id, function (err, data) {
+            if (err) return fail(err);
+
+            if (data) return success(data);
+
+            // if data is null, get from database
+            const sql = 'SELECT * FROM aibles.posts where id = ?;';
+            const queryData = {
+                sql: sql,
+                values: [id]
+            };
+            database.query(queryData, function (err, res, fields) {
+                if (err) return fail(err);
+                success(res);
+            });
+        })
+    });
+}
+
+function getTagName(tagIds = []) {
+    // cache for tags in process
+    tags = [
+        {
+            id: 1,
+            name: 'Sports'
+        },
+        {
+            id: 2,
+            name: 'Music'
+        },
+        {
+            id: 3,
+            name: 'Game'
+        }
+    ];
+    return tags.filter(function (tag) {
+        return tagIds.includes(tag.id);
+    });
+}
 
 function updateTagsOfPost(postId, tags = []) {
     return new Promise(function (success, fail) {
@@ -94,6 +139,7 @@ function deletePost(postId) {
 
 
 export {
+    getPostById,
     createPost,
     updatePost,
     deletePost

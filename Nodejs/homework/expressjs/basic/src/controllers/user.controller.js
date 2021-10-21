@@ -1,6 +1,6 @@
 import { ErrorCodes, respondSuccess, responseWithError } from '../helpers';
 
-import { createUser, deleteUser, getUserPosts, getUsers, getUsersPosts, updateUser } from '../services/user.service';
+import { createUser, deleteUser, getUserWithPostsById, getUsers, getUsersWithPosts, updateUser } from '../services/user.service';
 
 async function create(req, res) {
     try {
@@ -55,7 +55,7 @@ async function remove(req, res) {
 
 function getAllUsersPosts(req, res) {
     return new Promise(function (success, fail) {
-        getUsersPosts().then(function (r) {
+        getUsersWithPosts().then(function (r) {
             success(r);
             return res.json(respondSuccess(r));
         }).catch(function (e) {
@@ -73,7 +73,7 @@ function getPostsByUserId(req, res) {
     const { user_id } = req.params;
     const { limit } = req.query || 2;
     return new Promise(function (success, fail) {
-        getUserPosts(user_id, limit)
+        getUserWithPostsById(user_id, limit)
             .then(function (r) {
                 success(r);
                 return res.json(respondSuccess(r));

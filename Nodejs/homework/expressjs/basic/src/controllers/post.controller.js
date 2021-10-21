@@ -1,14 +1,28 @@
-import { 
-    ErrorCodes, 
-    respondSuccess, 
-    responseWithError 
+import {
+    ErrorCodes,
+    respondSuccess,
+    responseWithError
 } from '../helpers';
 import {
+    getPostById,
     createPost,
     updatePost,
     deletePost
 } from '../services/post.service';
 
+
+function getById(req, res) {
+    return new Promise(function (success, fail) {
+        getPostById(req.params.id).then(function (post) {
+            success(res.json(respondSuccess(post)));
+        }).catch(function (err) {
+            fail(err);
+            return res.json(responseWithError(ErrorCodes.ERROR_CODE_INVALID_PARAMETER, 'Error', err));
+        })
+    }).catch(function (e) {
+        console.log('Error');
+    });
+}
 
 function create(req, res) {
     return new Promise(function (success, fail) {
@@ -60,6 +74,7 @@ function remove(req, res) {
 
 
 module.exports = {
+    getById,
     create,
     update,
     remove

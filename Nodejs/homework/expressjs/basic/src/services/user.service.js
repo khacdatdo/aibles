@@ -54,7 +54,7 @@ function deleteUser(id) {
     })
 }
 
-function getUsersPosts(limit = 100) {
+function getUsersWithPosts(limit = 100) {
     return new Promise(function (success, fail) {
         const sql = `select id as uid, name, json_arrayagg(json_object('id', pid, 'context', context, 'time', time, 'tags', tags)) as posts from users
                     left join (
@@ -75,7 +75,7 @@ function getUsersPosts(limit = 100) {
     })
 }
 
-function getUserPosts(id, limit = 2) {
+function getUserWithPostsById(id, limit = 2) {
     return new Promise(function (success, fail) {
         const sql = `select id, context, time, json_arrayagg(json_object('id', tid, 'name', tname)) as tags from posts
                     left join (
@@ -105,6 +105,6 @@ export {
     getUsers,
     updateUser,
     deleteUser,
-    getUsersPosts,
-    getUserPosts
+    getUsersWithPosts,
+    getUserWithPostsById
 }
