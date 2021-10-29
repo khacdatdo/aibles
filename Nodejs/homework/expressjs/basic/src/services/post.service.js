@@ -25,9 +25,9 @@ function getPostById(id) {
     });
 }
 
-function getTagName(tagIds = []) {
+function getTags(tagIds = []) {
     // cache for tags in process
-    tags = [
+    const tags = [
         {
             id: 1,
             name: 'Sports'
@@ -139,6 +139,7 @@ function deletePost(postId) {
 
 
 export {
+    getTags,
     getPostById,
     createPost,
     updatePost,

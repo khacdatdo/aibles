@@ -75,7 +75,7 @@ function getUsersWithPosts(limit = 100) {
     })
 }
 
-function getUserWithPostsById(id, limit = 2) {
+function getPostsByUserId(id, limit = 2) {
     return new Promise(function (success, fail) {
         const sql = `select id, context, time, json_arrayagg(json_object('id', tid, 'name', tname)) as tags from posts
                     left join (
@@ -106,5 +106,5 @@ export {
     updateUser,
     deleteUser,
     getUsersWithPosts,
-    getUserWithPostsById
+    getPostsByUserId
 }

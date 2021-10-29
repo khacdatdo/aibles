@@ -21,7 +21,7 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.use('/api/v1', router);
+app.use('/', router);
 
 app.use(express.static(path.join(__dirname, '../public')));
 

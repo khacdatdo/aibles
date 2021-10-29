@@ -1,6 +1,6 @@
 import { ErrorCodes, respondSuccess, responseWithError } from '../helpers';
 
-import { createUser, deleteUser, getUserWithPostsById, getUsers, getUsersWithPosts, updateUser } from '../services/user.service';
+import { createUser, deleteUser, getPostsByUserId as getPByUId, getUsers, getUsersWithPosts, updateUser } from '../services/user.service';
 
 async function create(req, res) {
     try {
@@ -73,7 +73,7 @@ function getPostsByUserId(req, res) {
     const { user_id } = req.params;
     const { limit } = req.query || 2;
     return new Promise(function (success, fail) {
-        getUserWithPostsById(user_id, limit)
+        getPByUId(user_id, limit)
             .then(function (r) {
                 success(r);
                 return res.json(respondSuccess(r));

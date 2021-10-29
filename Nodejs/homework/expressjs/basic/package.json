@@ -9,7 +9,8 @@
     "build": "babel src -d dist --copy-files",
     "lint": "eslint --fix ./src",
     "dev": "nodemon --exec babel-node src/index.js",
-    "start": "env TZ='Etc/UTC' node ./dist/index.js"
+    "start": "env TZ='Etc/UTC' node ./dist/index.js",
+    "test": "jest"
   },
   "dependencies": {
     "body-parser": "^1.19.0",
@@ -40,8 +41,9 @@
     "eslint-plugin-jsx-a11y": "^6.2.3",
     "eslint-plugin-react": "^7.20.0",
     "husky": "^4.2.5",
-    "jest": "^26.4.0",
+    "jest": "^27.3.1",
     "lint-staged": "^10.2.11",
-    "nodemon": "^2.0.4"
+    "nodemon": "^2.0.4",
+    "supertest": "^6.1.6"
   }
 }
