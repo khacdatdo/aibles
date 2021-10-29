@@ -94,7 +94,7 @@ function getPostsByUserId(id, limit = 2) {
             res.forEach(function (p) {
                 p.tags = JSON.parse(p.tags);
             })
-            success(res);
+            return success(res);
         })
     })
 }
