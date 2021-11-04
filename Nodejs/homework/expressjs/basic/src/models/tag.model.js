@@ -1,10 +1,11 @@
-import { DataTypes } from 'sequelize'
-import sequelize from '.'
+import { DataTypes } from 'sequelize';
+import sequelize from './sequelize';
 
 const Tag = sequelize.define('Tag', {
     id: {
         type: DataTypes.INTEGER,
-        autoIncrement: true
+        autoIncrement: true,
+        primaryKey: true,
     },
     name: {
         type: DataTypes.STRING,
