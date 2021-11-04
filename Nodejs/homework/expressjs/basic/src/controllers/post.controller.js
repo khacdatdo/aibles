@@ -17,7 +17,8 @@ function getById(req, res) {
             success(res.json(respondSuccess(post)));
         }).catch(function (err) {
             fail(err);
-            return res.json(responseWithError(ErrorCodes.ERROR_CODE_INVALID_PARAMETER, 'Error', err));
+            return res.status(ErrorCodes.ERROR_CODE_API_NOT_FOUND)
+                .json(responseWithError(ErrorCodes.ERROR_CODE_API_NOT_FOUND, 'Error', err));
         })
     }).catch(function (e) {
         console.log('Error');
@@ -32,7 +33,8 @@ function create(req, res) {
             })
             .catch(function (e) {
                 fail(e);
-                return res.json(responseWithError(ErrorCodes.ERROR_CODE_INVALID_PARAMETER, 'Error', e));
+                return res.status(ErrorCodes.ERROR_CODE_INVALID_PARAMETER)
+                    .json(responseWithError(ErrorCodes.ERROR_CODE_INVALID_PARAMETER, 'Error', e));
             });
     }).catch(function (e) {
         //  maybe write to logger
@@ -48,7 +50,8 @@ function update(req, res) {
             })
             .catch(function (e) {
                 fail(e);
-                return res.json(responseWithError(ErrorCodes.ERROR_CODE_INVALID_PARAMETER, 'Error', e));
+                return res.status(ErrorCodes.ERROR_CODE_API_NOT_FOUND)
+                    .json(responseWithError(ErrorCodes.ERROR_CODE_API_NOT_FOUND, 'Error', e));
             });
     }).catch(function (e) {
         //  maybe write to logger
@@ -64,7 +67,8 @@ function remove(req, res) {
             })
             .catch(function (e) {
                 fail(e);
-                return res.json(responseWithError(ErrorCodes.ERROR_CODE_INVALID_PARAMETER, 'Error', e));
+                return res.status(ErrorCodes.ERROR_CODE_API_NOT_FOUND)
+                    .json(responseWithError(ErrorCodes.ERROR_CODE_API_NOT_FOUND, 'Error', e));
             });
     }).catch(function (e) {
         //  maybe write to logger

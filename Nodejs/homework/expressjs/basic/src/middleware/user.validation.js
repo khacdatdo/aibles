@@ -1,19 +1,41 @@
-import { RegexName, RegexNumber, RegexSex } from '../helpers/regex';
+import { RegexName, RegexNumber, RegexSex, RegexUsername } from '../helpers/regex';
 import {
     responseWithError, ErrorCodes
 } from '../helpers';
 
-function validCreateUser(req, res, next) {
-    const {
-        name, age
-    } = req.body;
-    if (!name || !age) {
+
+function validateLogin(req, res, next) {
+    const { username, password } = req.body;
+    if (!username || !password) {
         return res.status(ErrorCodes.ERROR_CODE_INVALID_PARAMETER)
             .json(responseWithError(ErrorCodes.ERROR_CODE_INVALID_PARAMETER, 'Invalid argument'));
+    }
+    return next();
+}
+
+function validCreateUser(req, res, next) {
+    const {
+        username, password, name, age, sex
+    } = req.body;
+    if (!name || !age || !sex || !username || !password) {
+        return res.status(ErrorCodes.ERROR_CODE_INVALID_PARAMETER)
+            .json(responseWithError(ErrorCodes.ERROR_CODE_INVALID_PARAMETER, 'Invalid argument'));
+    }
+    if (!RegexUsername.test(username)) {
+        return res.status(ErrorCodes.ERROR_CODE_INVALID_PARAMETER)
+            .json(responseWithError(ErrorCodes.ERROR_CODE_INVALID_PARAMETER, 'Invalid username'));
+    }
+    if (!RegexUsername.test(password)) {
+        return res.status(ErrorCodes.ERROR_CODE_INVALID_PARAMETER)
+            .json(responseWithError(ErrorCodes.ERROR_CODE_INVALID_PARAMETER, 'Invalid password'));
     }
     if (!RegexName.test(name)) {
         return res.status(ErrorCodes.ERROR_CODE_INVALID_PARAMETER)
             .json(responseWithError(ErrorCodes.ERROR_CODE_INVALID_PARAMETER, 'Invalid name'));
+    }
+    if (!RegexSex.test(sex)) {
+        return res.status(ErrorCodes.ERROR_CODE_INVALID_PARAMETER)
+            .json(responseWithError(ErrorCodes.ERROR_CODE_INVALID_PARAMETER, 'Invalid filter sex'));
     }
     if (!RegexNumber.test(age) || age * 1 < 1 || age * 1 > 150) {
         return res.status(ErrorCodes.ERROR_CODE_INVALID_PARAMETER)
@@ -53,9 +75,9 @@ function validGetFilter(req, res, next) {
 
 function validUpdateUser(req, res, next) {
     const {
-        id, name, sex, age
+        id, name, sex, age, username, password
     } = req.body;
-    if (!RegexNumber.test(id) || !id) {
+    if (!id || !RegexNumber.test(id)) {
         return res.status(ErrorCodes.ERROR_CODE_INVALID_PARAMETER)
             .json(responseWithError(ErrorCodes.ERROR_CODE_INVALID_PARAMETER, 'Invalid id'));
     }
@@ -70,6 +92,14 @@ function validUpdateUser(req, res, next) {
     if (age && !RegexNumber.test(age) || age * 1 < 1 || age * 1 > 150) {
         return res.status(ErrorCodes.ERROR_CODE_INVALID_PARAMETER)
             .json(responseWithError(ErrorCodes.ERROR_CODE_INVALID_PARAMETER, 'Invalid age'));
+    }
+    if (username && !RegexUsername.test(username)) {
+        return res.status(ErrorCodes.ERROR_CODE_INVALID_PARAMETER)
+            .json(responseWithError(ErrorCodes.ERROR_CODE_INVALID_PARAMETER, 'Invalid username'));
+    }
+    if (password && !RegexUsername.test(password)) {
+        return res.status(ErrorCodes.ERROR_CODE_INVALID_PARAMETER)
+            .json(responseWithError(ErrorCodes.ERROR_CODE_INVALID_PARAMETER, 'Invalid password'));
     }
     return next();
 }
@@ -100,5 +130,5 @@ function validateGetPostsByUserId(req, res, next) {
 }
 
 export {
-    validCreateUser, validGetFilter, validUpdateUser, validRemoveUser, validateGetPostsByUserId
+    validCreateUser, validGetFilter, validUpdateUser, validRemoveUser, validateGetPostsByUserId, validateLogin
 }

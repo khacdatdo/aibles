@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { getById, create, update, remove } from "../controllers/post.controller";
+import { auth } from "../middleware/auth";
 import {
     validateGetPostById,
     validateCreatePost,
@@ -13,18 +14,18 @@ const router = Router();
 
 router
     .route('/:id')
-    .get(validateGetPostById, getById);
+    .get(auth, validateGetPostById, getById);
 
 router
     .route('/')
-    .post(validateCreatePost, create);
+    .post(auth, validateCreatePost, create);
 
 router
     .route('/')
-    .patch(validateUpdatePost, update);
+    .patch(auth, validateUpdatePost, update);
 
 router
     .route('/:id')
-    .delete(validateDeletePost, remove);
+    .delete(auth, validateDeletePost, remove);
 
-module.exports = router;
+export default router;

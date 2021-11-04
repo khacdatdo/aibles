@@ -3,7 +3,7 @@ import app from './config/express';
 
 dotenv.config();
 
-const port = process.env.PORT;
+const port = process.env.PORT || 3000;
 const env = process.env.NODE_ENV;
 
 // listen to requests

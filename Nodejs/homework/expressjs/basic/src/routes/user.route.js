@@ -1,31 +1,32 @@
 import { get, create, update, remove, getAllUsersPosts, getPostsByUserId } from '../controllers/user.controller';
 import { Router } from 'express';
 import { validateGetPostsByUserId, validCreateUser, validGetFilter, validRemoveUser, validUpdateUser } from '../middleware/user.validation';
+import { auth } from '../middleware/auth';
 
 const router = Router();
 
 router
     .route('/')
-    .get(validGetFilter, get)
+    .get(auth, validGetFilter, get)
 
 router
     .route('/')
-    .post(validCreateUser, create)
+    .post(auth, validCreateUser, create)
 
 router
     .route('/')
-    .patch(validUpdateUser, update)
+    .patch(auth, validUpdateUser, update)
 
 router
     .route('/:id')
-    .delete(validRemoveUser, remove)
+    .delete(auth, validRemoveUser, remove)
 
 router
     .route('/posts')
-    .get(getAllUsersPosts)
+    .get(auth, getAllUsersPosts)
 
 router
     .route('/:user_id/posts')
-    .get(validateGetPostsByUserId, getPostsByUserId)
+    .get(auth, validateGetPostsByUserId, getPostsByUserId)
 
 export default router;

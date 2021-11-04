@@ -1,12 +1,23 @@
 import { ErrorCodes, respondSuccess, responseWithError } from '../helpers';
 
-import { createUser, deleteUser, getPostsByUserId as getPByUId, getUsers, getUsersWithPosts, updateUser } from '../services/user.service';
+import { createUser, deleteUser, getPostsByUserId as getPByUId, getUsers, getUsersWithPosts, updateUser, login } from '../services/user.service';
+
+
+async function signin(req, res) {
+    try {
+        const data = await login(req.body);
+        return res.json(respondSuccess(data));
+    } catch (error) {
+        return res.status(ErrorCodes.ERROR_CODE_UNAUTHORIZED)
+            .json(responseWithError(ErrorCodes.ERROR_CODE_UNAUTHORIZED, 'Error', error));
+    }
+}
 
 async function create(req, res) {
     try {
-        const user = req.body;
-        const users = await createUser(user);
-        return res.json(respondSuccess(users));
+        const userData = req.body;
+        const user = await createUser(userData);
+        return res.json(respondSuccess(user));
     } catch (error) {
         return res.status(ErrorCodes.ERROR_CODE_INVALID_PARAMETER)
             .json(responseWithError(ErrorCodes.ERROR_CODE_INVALID_PARAMETER, 'Error', error));
@@ -27,7 +38,8 @@ async function get(req, res) {
         const users = await getUsers(Object.assign(default_filter, filter));
         return res.json(respondSuccess(users));
     } catch (error) {
-        return res.status(ErrorCodes.ERROR_CODE_INVALID_PARAMETER).json(responseWithError(ErrorCodes.ERROR_CODE_INVALID_PARAMETER, 'Error', error));
+        return res.status(ErrorCodes.ERROR_CODE_INVALID_PARAMETER)
+            .json(responseWithError(ErrorCodes.ERROR_CODE_INVALID_PARAMETER, 'Error', error));
     }
 }
 
@@ -37,7 +49,8 @@ async function update(req, res) {
         const users = await updateUser(user);
         return res.json(respondSuccess(users));
     } catch (error) {
-        return res.json(responseWithError(ErrorCodes.ERROR_CODE_INVALID_PARAMETER, 'Error', error));
+        return res.status(ErrorCodes.ERROR_CODE_API_NOT_FOUND)
+            .json(responseWithError(ErrorCodes.ERROR_CODE_API_NOT_FOUND, 'Error', error));
     }
 }
 
@@ -49,7 +62,8 @@ async function remove(req, res) {
         const users = await deleteUser(id);
         return res.json(respondSuccess(users));
     } catch (error) {
-        return res.json(responseWithError(ErrorCodes.ERROR_CODE_INVALID_PARAMETER, 'Error', error));
+        return res.status(ErrorCodes.ERROR_CODE_API_NOT_FOUND)
+            .json(responseWithError(ErrorCodes.ERROR_CODE_API_NOT_FOUND, 'Error', error));
     }
 }
 
@@ -80,9 +94,12 @@ function getPostsByUserId(req, res) {
             })
             .catch(function (err) {
                 fail(err);
-                return res.status(ErrorCodes.ERROR_CODE_SYSTEM_ERROR)
-                    .json(responseWithError(ErrorCodes.ERROR_CODE_SYSTEM_ERROR, 'Unknown Error', err));
+                return res.status(ErrorCodes.ERROR_CODE_API_NOT_FOUND)
+                    .json(responseWithError(ErrorCodes.ERROR_CODE_API_NOT_FOUND, 'Error', error));
             });
+    }).catch(function (e) {
+        // write to logger
+        console.error('Error');
     });
 }
 
@@ -93,5 +110,6 @@ export {
     update,
     remove,
     getAllUsersPosts,
-    getPostsByUserId
+    getPostsByUserId,
+    signin
 }

@@ -8,3 +8,5 @@ export const RegexName = /^([a-zA-Z\s]+)+$/
 export const RegexSex = /^(Nam|Nu)$/i
 
 export const RegexNumber = /^[1-9][0-9]*$/
+
+export const RegexUsername = /^[a-zA-Z0-9_]{6,100}$/

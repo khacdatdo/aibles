@@ -30,22 +30,18 @@ function validateCreatePost(req, res, next) {
 }
 
 function validateUpdatePost(req, res, next) {
-    const { id, updates, tags } = req.body;
-    if (!id || !updates) {
-        return res.status(ErrorCodes.ERROR_CODE_INVALID_PARAMETER)
-            .json(responseWithError(ErrorCodes.ERROR_CODE_INVALID_PARAMETER, 'Invalid argument'));
-    }
-    if (!RegexNumber.test(id)) {
+    const { id, context, tags } = req.body;
+    if (!id || !RegexNumber.test(id)) {
         return res.status(ErrorCodes.ERROR_CODE_INVALID_PARAMETER)
             .json(responseWithError(ErrorCodes.ERROR_CODE_INVALID_PARAMETER, 'Invalid id'));
     }
-    if (typeof updates != 'object') {
+    if (context && typeof context != 'string') {
         return res.status(ErrorCodes.ERROR_CODE_INVALID_PARAMETER)
-            .json(responseWithError(ErrorCodes.ERROR_CODE_INVALID_PARAMETER, 'Invalid type of updates'));
+            .json(responseWithError(ErrorCodes.ERROR_CODE_INVALID_PARAMETER, 'Invalid type of context'));
     }
     if (tags && typeof tags != 'object') {
         return res.status(ErrorCodes.ERROR_CODE_INVALID_PARAMETER)
-            .json(responseWithError(ErrorCodes.ERROR_CODE_INVALID_PARAMETER, 'Invalid type of updates.tags'));
+            .json(responseWithError(ErrorCodes.ERROR_CODE_INVALID_PARAMETER, 'Invalid type of tags'));
     }
     return next();
 }
