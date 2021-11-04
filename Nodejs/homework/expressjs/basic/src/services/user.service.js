@@ -1,102 +1,146 @@
 import database from './db';
+import { Post, Tag, User } from '../models';
+import { createToken, createRefreshToken } from '../middleware/auth';
 
-function createUser(user) {
-    return new Promise(function (success, fail) {
-        const data = {
-            sql: `INSERT INTO aibles.users (name, age) VALUES (?);`,
-            values: [[user.name, user.age]]
-        };
-        database.query(data, function (err, res, fields) {
-            if (err) {
-                fail(err);
-            }
-            success(res);
-        });
-    })
-}
 
-function getUsers(ft) {
-    return new Promise(function (success, fail) {
-        const result = users.filter(function (user) {
-            if (!ft.id && !ft.name && !ft.sex && !ft.age) {
-                return true;
+async function login(user) {
+    try {
+        const data = await User.findOne({
+            where: {
+                username: user.username,
+                password: user.password
             }
-            return (ft.id && ft.id * 1 == user.id)
-                || (ft.name && user.name.toLowerCase().indexOf(ft.name.toLowerCase()) !== -1)
-                || (ft.sex && ft.sex.toLowerCase() == user.sex.toLowerCase())
-                || (ft.age && ft.age * 1 == user.age);
-        });
-        if (Math.ceil(result.length / ft.per_page) < ft.page) {
-            success([]);
+        })
+        if (!data) {
+            throw {
+                message: 'Username or password is incorrect'
+            };
         }
-        success(result.slice((ft.page - 1) * ft.per_page, ft.page * ft.per_page));
-    })
+        const token = createToken(data.toJSON());
+        const refreshToken = createRefreshToken(data.toJSON());
+        return { token, refreshToken };
+    } catch (error) {
+        throw error;
+    }
 }
 
-function updateUser(user) {
-    return new Promise(function (success) {
-        users.forEach(function (u) {
-            if (user.id * 1 == u.id) {
-                u = Object.assign(u, user);
-                return;
+async function createUser(user) {
+    try {
+        const token = createToken(user);
+        const refreshToken = createRefreshToken(user);
+        const newUser = await User.create(Object.assign(user));
+        newUser.save();
+        return Object.assign(newUser.toJSON(), { token, refreshToken });
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function getUsers(ft) {
+    try {
+        const filter = {};
+        if (ft.id) filter.id = ft.id;
+        if (ft.name) filter.name = ft.name;
+        if (ft.sex) filter.sex = ft.sex;
+        if (ft.age) filter.age = ft.age;
+        const users = await User.findAll({
+            where: filter,
+            limit: ft.per_page * 1,
+            offset: ft.per_page * (ft.page - 1),
+            attributes: {
+                exclude: ['password']
             }
-        })
-        success(users);
-    })
+        });
+        return users;
+    } catch (error) {
+        throw error;
+    }
 }
 
-function deleteUser(id) {
-    return new Promise(function (success) {
-        const result = users.filter(function (user) {
-            return id * 1 !== user.id * 1;
-        })
-        success(result);
-    })
+async function updateUser(user) {
+    try {
+        const userUpdated = await User.update(user, {
+            where: {
+                id: user.id
+            }
+        });
+        if (!userUpdated) {
+            throw {
+                id: 'Not found'
+            };
+        }
+        return userUpdated;
+    } catch (error) {
+        throw error;
+    }
 }
 
-function getUsersWithPosts(limit = 100) {
-    return new Promise(function (success, fail) {
-        const sql = `select id as uid, name, json_arrayagg(json_object('id', pid, 'context', context, 'time', time, 'tags', tags)) as posts from users
-                    left join (
-                        select posts.id as pid, context, time, user_id as uid, json_arrayagg(json_object('id', tid, 'name', tname)) as tags from posts
-                        left join (
-                            select post_id, tags.id as tid, tags.name as tname from posts_tags, tags where posts_tags.tag_id = tags.id
-                        ) as t on posts.id = post_id
-                        group by id 
-                    ) as p on users.id = p.uid
-                    group by id;`;
-        database.query(sql, [limit], function (err, res, fields) {
-            if (err) return fail(err);
-            res.forEach(function (u) {
-                u.posts = JSON.parse(u.posts);
-            })
-            success(res);
-        })
-    })
+async function deleteUser(id) {
+    try {
+        const user = await User.destroy({
+            where: {
+                id
+            }
+        });
+        if (!user) {
+            throw {
+                id: 'Not found'
+            };
+        }
+        return user;
+    } catch (error) {
+        throw error;
+    }
 }
 
-function getPostsByUserId(id, limit = 2) {
-    return new Promise(function (success, fail) {
-        const sql = `select id, context, time, json_arrayagg(json_object('id', tid, 'name', tname)) as tags from posts
-                    left join (
-                        select tags.id as tid, tags.name as tname, post_id from tags, posts_tags where tags.id = tag_id
-                    ) as t on id = t.post_id
-                    where user_id = ?
-                    group by id
-                    order by time desc
-                    limit ?;`;
-        const data = {
-            sql: sql,
-            values: [id, limit * 1]
-        };
-        database.query(data, function (err, res, fields) {
-            if (err) return fail(err);
-            res.forEach(function (p) {
-                p.tags = JSON.parse(p.tags);
-            })
-            return success(res);
+async function getUsersWithPosts(limit = 100) {
+    try {
+        const data = await User.findAll({
+            include: [{
+                model: Post,
+                attributes: ['id', 'context', 'time'],
+                include: [
+                    {
+                        model: Tag,
+                        attributes: ['id', 'name']
+                    }
+                ]
+            }],
+            limit: limit
         })
-    })
+        return data;
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function getPostsByUserId(id, limit = 2) {
+    try {
+        const data = await User.findOne({
+            include: [{
+                model: Post,
+                attributes: ['id', 'context', 'time'],
+                include: [
+                    {
+                        model: Tag,
+                        attributes: ['id', 'name']
+                    }
+                ],
+                limit: limit
+            }],
+            where: {
+                id: id
+            },
+        })
+        if (!data) {
+            throw {
+                id: 'Not found'
+            };
+        }
+        return data;
+    } catch (error) {
+        throw error;
+    }
 }
 
 
@@ -106,5 +150,6 @@ export {
     updateUser,
     deleteUser,
     getUsersWithPosts,
-    getPostsByUserId
+    getPostsByUserId,
+    login
 }
