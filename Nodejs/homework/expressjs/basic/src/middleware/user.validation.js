@@ -75,11 +75,16 @@ function validGetFilter(req, res, next) {
 
 function validUpdateUser(req, res, next) {
     const {
-        id, name, sex, age, username, password
+        name, sex, age, username, password
     } = req.body;
+    const { id } = req.params;
     if (!id || !RegexNumber.test(id)) {
         return res.status(ErrorCodes.ERROR_CODE_INVALID_PARAMETER)
             .json(responseWithError(ErrorCodes.ERROR_CODE_INVALID_PARAMETER, 'Invalid id'));
+    }
+    if (!name && !sex && !age && !username && !password) {
+        return res.status(ErrorCodes.ERROR_CODE_INVALID_PARAMETER)
+            .json(responseWithError(ErrorCodes.ERROR_CODE_INVALID_PARAMETER, 'Must have at least one field'))
     }
     if (name && !RegexName.test(name)) {
         return res.status(ErrorCodes.ERROR_CODE_INVALID_PARAMETER)

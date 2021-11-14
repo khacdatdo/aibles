@@ -11,22 +11,22 @@ router
 
 router
     .route('/')
-    .post(auth, validCreateUser, create)
+    .post(validCreateUser, create)
 
 router
-    .route('/')
+    .route('/posts')
+    .get(auth, getAllUsersPosts)
+    
+router
+    .route('/:user_id')
+    .get(auth, validateGetPostsByUserId, getPostsByUserId)
+
+router
+    .route('/:id')
     .patch(auth, validUpdateUser, update)
 
 router
     .route('/:id')
     .delete(auth, validRemoveUser, remove)
-
-router
-    .route('/posts')
-    .get(auth, getAllUsersPosts)
-
-router
-    .route('/:user_id/posts')
-    .get(auth, validateGetPostsByUserId, getPostsByUserId)
 
 export default router;

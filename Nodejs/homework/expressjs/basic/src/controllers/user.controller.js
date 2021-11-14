@@ -6,10 +6,10 @@ import { createUser, deleteUser, getPostsByUserId as getPByUId, getUsers, getUse
 async function signin(req, res) {
     try {
         const data = await login(req.body);
-        return res.json(respondSuccess(data));
+        return res.json(respondSuccess(data, 'Login successfully'));
     } catch (error) {
         return res.status(ErrorCodes.ERROR_CODE_UNAUTHORIZED)
-            .json(responseWithError(ErrorCodes.ERROR_CODE_UNAUTHORIZED, 'Error', error));
+            .json(responseWithError(ErrorCodes.ERROR_CODE_UNAUTHORIZED, error.message));
     }
 }
 
@@ -17,10 +17,10 @@ async function create(req, res) {
     try {
         const userData = req.body;
         const user = await createUser(userData);
-        return res.json(respondSuccess(user));
+        return res.json(respondSuccess({}, 'User created successfully'));
     } catch (error) {
         return res.status(ErrorCodes.ERROR_CODE_INVALID_PARAMETER)
-            .json(responseWithError(ErrorCodes.ERROR_CODE_INVALID_PARAMETER, 'Error', error));
+            .json(responseWithError(ErrorCodes.ERROR_CODE_INVALID_PARAMETER, error.message));
     }
 }
 
@@ -46,11 +46,12 @@ async function get(req, res) {
 async function update(req, res) {
     try {
         const user = req.body;
-        const users = await updateUser(user);
-        return res.json(respondSuccess(users));
+        user.id = req.params.id;
+        const updatedUser = await updateUser(user);
+        return res.json(respondSuccess({}, 'User updated successfully'));
     } catch (error) {
         return res.status(ErrorCodes.ERROR_CODE_API_NOT_FOUND)
-            .json(responseWithError(ErrorCodes.ERROR_CODE_API_NOT_FOUND, 'Error', error));
+            .json(responseWithError(ErrorCodes.ERROR_CODE_API_NOT_FOUND, error.message));
     }
 }
 
@@ -60,10 +61,10 @@ async function remove(req, res) {
             id
         } = req.params;
         const users = await deleteUser(id);
-        return res.json(respondSuccess(users));
+        return res.json(respondSuccess({}, 'User deleted successfully'));
     } catch (error) {
         return res.status(ErrorCodes.ERROR_CODE_API_NOT_FOUND)
-            .json(responseWithError(ErrorCodes.ERROR_CODE_API_NOT_FOUND, 'Error', error));
+            .json(responseWithError(ErrorCodes.ERROR_CODE_API_NOT_FOUND, error.message));
     }
 }
 
@@ -95,7 +96,7 @@ function getPostsByUserId(req, res) {
             .catch(function (err) {
                 fail(err);
                 return res.status(ErrorCodes.ERROR_CODE_API_NOT_FOUND)
-                    .json(responseWithError(ErrorCodes.ERROR_CODE_API_NOT_FOUND, 'Error', error));
+                    .json(responseWithError(ErrorCodes.ERROR_CODE_API_NOT_FOUND, err.message));
             });
     }).catch(function (e) {
         // write to logger

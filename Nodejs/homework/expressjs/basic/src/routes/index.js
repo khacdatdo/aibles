@@ -16,4 +16,4 @@ router.use('/posts', postRouters);
 
 router.use('/auth', authRouters);
 
-module.exports = router;
+export default router;

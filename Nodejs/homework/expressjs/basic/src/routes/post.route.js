@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getById, create, update, remove } from "../controllers/post.controller";
+import { getById, create, update, remove, getAll } from "../controllers/post.controller";
 import { auth } from "../middleware/auth";
 import {
     validateGetPostById,
@@ -13,15 +13,20 @@ const router = Router();
 
 
 router
-    .route('/:id')
-    .get(auth, validateGetPostById, getById);
+    .route('/')
+    .get(auth, getAll)
 
 router
     .route('/')
     .post(auth, validateCreatePost, create);
 
+
 router
-    .route('/')
+    .route('/:id')
+    .get(auth, validateGetPostById, getById);
+
+router
+    .route('/:id')
     .patch(auth, validateUpdatePost, update);
 
 router

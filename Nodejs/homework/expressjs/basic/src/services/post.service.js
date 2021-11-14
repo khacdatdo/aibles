@@ -1,10 +1,16 @@
-import database from './db';
 import { Post, Tag } from '../models';
 
+async function getAllPosts() {
+    try {
+        const posts = await Post.findAll();
+        return posts;
+    } catch (error) {
+        throw error;
+    }
+}
 
 async function getPostById(id) {
     try {
-        // get post by id
         const post = await Post.findOne({
             where: {
                 id: id
@@ -19,28 +25,26 @@ async function getPostById(id) {
                 id: 'Not found'
             }
         }
-        // return the post
         return post;
     } catch (error) {
-        console.log(error);
         throw error;
     }
 }
 
 async function createPost(post) {
     try {
-        //  create a new post
         const newPost = await Post.create(post);
         newPost.setUser(post.user_id);
         if (post.tags) {
+            // post.tags = {
+            //     id: [1, 2, 3]
+            // }
             const tags = await Tag.findAll({
-                where: {
-                    id: post.tags
-                }
+                where: post.tags
             });
             newPost.setTags(tags);
         }
-        //  return the new post
+        newPost.save();
         return newPost;
     } catch (error) {
         throw error;
@@ -49,33 +53,24 @@ async function createPost(post) {
 
 async function updatePost(postData) {
     try {
-        // update post
-        const updatedPost = await Post.update(postData, {
+        const updatedPost = await Post.findOne({
             where: {
                 id: postData.id
-            },
-            fields: ['context']
+            }
         });
-        if (!updatedPost[0]) {
+        if (!updatedPost) {
             throw {
-                id: 'Not found'
+                message: 'Post not found'
             };
         }
         if (postData.tags) {
             const tags = await Tag.findAll({
-                where: {
-                    id: postData.tags
-                }
+                where: postData.tags
             });
-            const post = await Post.findOne({
-                where: {
-                    id: postData.id
-                }
-            });
-            post.setTags(tags);
+            updatedPost.setTags(tags);
         }
-        // return the updated post
-        return postData;
+        updatedPost.update(postData);
+        return updatedPost;
     } catch (error) {
         throw error;
     }
@@ -83,19 +78,18 @@ async function updatePost(postData) {
 
 async function deletePost(postId) {
     try {
-        // delete post
-        const deletedPost = await Post.destroy({
+        const deletedPost = await Post.findOne({
             where: {
                 id: postId
             }
         });
         if (!deletedPost) {
             throw {
-                id: 'Not found'
+                message: 'Post not found'
             };
         }
-        // return the deleted post
-        return postId;
+        await deletedPost.destroy();
+        return deletedPost;
     } catch (error) {
         throw error;
     }
@@ -104,6 +98,7 @@ async function deletePost(postId) {
 
 
 export {
+    getAllPosts,
     getPostById,
     createPost,
     updatePost,

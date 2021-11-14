@@ -1,17 +1,23 @@
 import { ErrorCodes } from './constants';
 
 export function respondSuccess(data, message = 'Success') {
-    return {
+    const response = {
         code: ErrorCodes.ERROR_CODE_SUCCESS,
         message,
-        data,
     };
+    if (Object.keys(data).length > 0) {
+        response.data = data;
+    }
+    return response;
 }
 
 export function responseWithError(errorCode, message = 'Error', data = {}) {
-    return {
+    const response = {
         code: errorCode,
         message,
-        errors: data,
     };
+    if (Object.keys(data).length > 0) {
+        response.errors = data;
+    }
+    return response;
 }

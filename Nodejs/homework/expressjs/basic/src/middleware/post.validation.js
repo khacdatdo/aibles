@@ -30,7 +30,8 @@ function validateCreatePost(req, res, next) {
 }
 
 function validateUpdatePost(req, res, next) {
-    const { id, context, tags } = req.body;
+    const { context, tags } = req.body;
+    const { id } = req.params;
     if (!id || !RegexNumber.test(id)) {
         return res.status(ErrorCodes.ERROR_CODE_INVALID_PARAMETER)
             .json(responseWithError(ErrorCodes.ERROR_CODE_INVALID_PARAMETER, 'Invalid id'));

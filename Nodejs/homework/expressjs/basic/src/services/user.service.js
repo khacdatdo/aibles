@@ -1,16 +1,16 @@
 import database from './db';
 import { Post, Tag, User } from '../models';
-import { createToken, createRefreshToken } from '../middleware/auth';
+import { createToken, createRefreshToken, hashPassword, checkPassword } from '../middleware/auth';
 
 
 async function login(user) {
     try {
         const data = await User.findOne({
             where: {
-                username: user.username,
-                password: user.password
+                username: user.username
             }
         })
+        const hash = checkPassword(user.password, data.password);
         if (!data) {
             throw {
                 message: 'Username or password is incorrect'
@@ -26,12 +26,16 @@ async function login(user) {
 
 async function createUser(user) {
     try {
-        const token = createToken(user);
-        const refreshToken = createRefreshToken(user);
-        const newUser = await User.create(Object.assign(user));
+        user.password = hashPassword(user.password);
+        const newUser = await User.create(user);
         newUser.save();
-        return Object.assign(newUser.toJSON(), { token, refreshToken });
+        return Object.assign(newUser.toJSON());
     } catch (error) {
+        if (error.name = 'SequelizeUniqueConstraintError') {
+            throw {
+                message: 'Username already exists'
+            }
+        }
         throw error;
     }
 }
@@ -59,16 +63,20 @@ async function getUsers(ft) {
 
 async function updateUser(user) {
     try {
-        const userUpdated = await User.update(user, {
+        if (user.password) {
+            user.password = hashPassword(user.password);
+        }
+        const userUpdated = await User.findOne({
             where: {
                 id: user.id
             }
         });
         if (!userUpdated) {
             throw {
-                id: 'Not found'
+                message: 'User not found'
             };
         }
+        userUpdated.update(user);
         return userUpdated;
     } catch (error) {
         throw error;
@@ -77,16 +85,17 @@ async function updateUser(user) {
 
 async function deleteUser(id) {
     try {
-        const user = await User.destroy({
+        const user = await User.findOne({
             where: {
                 id
             }
         });
         if (!user) {
             throw {
-                id: 'Not found'
+                message: 'User not found'
             };
         }
+        user.destroy();
         return user;
     } catch (error) {
         throw error;
@@ -106,7 +115,10 @@ async function getUsersWithPosts(limit = 100) {
                     }
                 ]
             }],
-            limit: limit
+            limit: limit,
+            attributes: {
+                exclude: ['password', 'createdAt', 'updatedAt']
+            }
         })
         return data;
     } catch (error) {
@@ -134,7 +146,7 @@ async function getPostsByUserId(id, limit = 2) {
         })
         if (!data) {
             throw {
-                id: 'Not found'
+                message: 'User not found'
             };
         }
         return data;
