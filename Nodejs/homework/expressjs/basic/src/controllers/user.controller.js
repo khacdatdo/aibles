@@ -69,39 +69,25 @@ async function remove(req, res) {
 }
 
 function getAllUsersPosts(req, res) {
-    return new Promise(function (success, fail) {
-        getUsersWithPosts().then(function (r) {
-            success(r);
-            return res.json(respondSuccess(r));
-        }).catch(function (e) {
-            fail(e);
-            return res.status(ErrorCodes.ERROR_CODE_SYSTEM_ERROR)
-                .json(responseWithError(ErrorCodes.ERROR_CODE_SYSTEM_ERROR, 'Unknown Error', e));
-        })
-    }).catch(function (e) {
-        // write to logger
-        console.error('Error');
-    })
+    try {
+        const result = getUsersWithPosts();
+        return res.json(respondSuccess(result));
+    } catch (error) {
+        return res.status(ErrorCodes.ERROR_CODE_SYSTEM_ERROR)
+            .json(responseWithError(ErrorCodes.ERROR_CODE_SYSTEM_ERROR, error.message));
+    }
 }
 
 function getPostsByUserId(req, res) {
     const { user_id } = req.params;
     const { limit } = req.query || 2;
-    return new Promise(function (success, fail) {
-        getPByUId(user_id, limit)
-            .then(function (r) {
-                success(r);
-                return res.json(respondSuccess(r));
-            })
-            .catch(function (err) {
-                fail(err);
-                return res.status(ErrorCodes.ERROR_CODE_API_NOT_FOUND)
-                    .json(responseWithError(ErrorCodes.ERROR_CODE_API_NOT_FOUND, err.message));
-            });
-    }).catch(function (e) {
-        // write to logger
-        console.error('Error');
-    });
+    try {
+        const posts = getPByUId(user_id, limit);
+        return res.json(respondSuccess(posts));
+    } catch (error) {
+        return res.status(ErrorCodes.ERROR_CODE_API_NOT_FOUND)
+            .json(responseWithError(ErrorCodes.ERROR_CODE_API_NOT_FOUND, error.message));
+    }
 }
 
 

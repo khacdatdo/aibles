@@ -13,42 +13,33 @@ import {
 
 
 function getAll(req, res) {
-    return new Promise(function (success, fail) {
-        getAllPosts().then(function (posts) {
-            success(res.json(respondSuccess(posts)));
-        });
-    })
+    try {
+        const posts = getAllPosts();
+        return res.json(respondSuccess(posts));
+    } catch (error) {
+        return res.status(ErrorCodes.ERROR_CODE_INVALID_PARAMETER)
+            .json(responseWithError(ErrorCodes.ERROR_CODE_INVALID_PARAMETER, error.message));
+    }
 }
 
 function getById(req, res) {
-    return new Promise(function (success, fail) {
-        getPostById(req.params.id).then(function (post) {
-            success(res.json(respondSuccess(post)));
-        }).catch(function (err) {
-            fail(err);
-            return res.status(ErrorCodes.ERROR_CODE_API_NOT_FOUND)
-                .json(responseWithError(ErrorCodes.ERROR_CODE_API_NOT_FOUND, 'Error', err));
-        })
-    }).catch(function (e) {
-        console.log('Error');
-    });
+    try {
+        const post = getPostById(req.params.id);
+        return res.json(respondSuccess(post));
+    } catch (error) {
+        return res.status(ErrorCodes.ERROR_CODE_API_NOT_FOUND)
+            .json(responseWithError(ErrorCodes.ERROR_CODE_API_NOT_FOUND, error.message));
+    }
 }
 
 function create(req, res) {
-    return new Promise(function (success, fail) {
-        createPost(req.body)
-            .then(function (r) {
-                success(res.json(respondSuccess({}, 'Create post successfully')));
-            })
-            .catch(function (e) {
-                fail(e);
-                return res.status(ErrorCodes.ERROR_CODE_INVALID_PARAMETER)
-                    .json(responseWithError(ErrorCodes.ERROR_CODE_INVALID_PARAMETER, 'Error', e));
-            });
-    }).catch(function (e) {
-        //  maybe write to logger
-        console.error('Error');
-    })
+    try {
+        const post = createPost(req.body);
+        return res.json(respondSuccess({}, 'Create post successfully'));
+    } catch (error) {
+        return res.status(ErrorCodes.ERROR_CODE_INVALID_PARAMETER)
+            .json(responseWithError(ErrorCodes.ERROR_CODE_INVALID_PARAMETER, error.message));
+    }
 }
 
 function update(req, res) {
